@@ -1,0 +1,11 @@
+@Asset_Service_HostAddress = http://localhost:5117
+
+GET {{Asset_Service_HostAddress}}/todos/
+Accept: application/json
+
+###
+
+GET {{Asset_Service_HostAddress}}/todos/1
+Accept: application/json
+
+###
