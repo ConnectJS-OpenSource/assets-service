@@ -25,7 +25,7 @@ namespace AWS.S3.Provider
         public async Task<Stream> GetAsset(string ParentDirectory, string Path)
         {
             var obj = await this._amazonS3Client.GetObjectAsync(ParentDirectory, Path);
-
+            
             return obj.ResponseStream;
         }
 

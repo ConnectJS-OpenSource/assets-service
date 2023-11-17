@@ -2,6 +2,7 @@ using Asset_Service;
 using Contracts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateSlimBuilder(args);
@@ -13,13 +14,20 @@ var app = builder.Build();
 
 
 
-app.MapGet("/{dir}/{file}", async (
+app.MapGet("/download", async (
     HttpContext ctx, 
     [FromKeyedServices("aws")] IAssetService assetsService,
-    string dir,
-    string file) =>
+    [FromQuery] string dir,
+    [FromQuery] string path) =>
 {
-    return Results.File(await assetsService.GetAsset(dir, file));
+	try
+	{
+        return Results.File(await assetsService.GetAsset(dir, path));
+    }
+	catch (Exception ex)
+	{
+        return Results.NotFound();
+	}
 });
 
 app.MapGet("/", () => new { message = "Assets Service Up and Running" });
