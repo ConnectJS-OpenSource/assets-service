@@ -11,21 +11,14 @@ using System.Threading.Tasks;
 
 namespace AWS.S3.Provider
 {
-    public class S3Service: IAssetService
+    public class S3Service(AWSOptions AwsOptions, IAmazonS3 amazonS3Client) : IAssetService
     {
-        private readonly AWSOptions _awsOptions;
-        private readonly IAmazonS3 _amazonS3Client;
-
-        public S3Service(AWSOptions AwsOptions, IAmazonS3 amazonS3Client)
-        {
-            this._awsOptions = AwsOptions;
-            _amazonS3Client = amazonS3Client;
-        }
+        private readonly AWSOptions _awsOptions = AwsOptions;
+        private readonly IAmazonS3 _amazonS3Client = amazonS3Client;
 
         public async Task<Stream> GetAsset(string ParentDirectory, string Path)
         {
             var obj = await this._amazonS3Client.GetObjectAsync(ParentDirectory, Path);
-            
             return obj.ResponseStream;
         }
 

@@ -4,15 +4,13 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json.Serialization;
+using Microsoft.Extensions.Azure;
 
 var builder = WebApplication.CreateSlimBuilder(args);
 
 Ioc.Register(builder.Services, builder.Configuration);
 
 var app = builder.Build();
-
-
-
 
 app.MapGet("/download", async (
     HttpContext ctx, 
@@ -31,12 +29,5 @@ app.MapGet("/download", async (
 });
 
 app.MapGet("/", () => new { message = "Assets Service Up and Running" });
-
-
-
-
-
-
-
 
 app.Run();

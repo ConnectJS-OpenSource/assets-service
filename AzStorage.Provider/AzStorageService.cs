@@ -1,4 +1,5 @@
-﻿using Contracts;
+﻿using Azure.Identity;
+using Contracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace AzStorage.Provider
 {
-    public class AzStorageService
+    public class AzStorageService(ClientSecretCredential credential) : IAssetService
     {
-        public Task<object> GetAsset(string ParentDirectory, string Path)
+        public Task<Stream> GetAsset(string ParentDirectory, string Path)
         {
             throw new NotImplementedException();
         }
