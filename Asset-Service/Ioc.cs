@@ -26,7 +26,7 @@ public class Ioc
             {
                 RegionEndpoint =
                     RegionEndpoint.GetBySystemName(configuration.GetSection("AWS:DEFAULT_REGION").Get<string>()),
-                AllowAutoRedirect = true
+                AllowAutoRedirect = true,
             }
         };
         
