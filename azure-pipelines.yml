@@ -23,8 +23,8 @@ stages:
         containerRegistry: 'DOCKER_HUB'
         repository: 'pitchnhire/pnh-asset-service'
         command: 'build'
-        Dockerfile: 'Dockerfile'
-        arguments: --no-cache --build-arg BUILD=$(Build.BuildNumber).$(Build.BuildId)
+        Dockerfile: 'Asset-Service/Dockerfile'
+        arguments: --no-cache
         tags: |
           latest
           $(Build.BuildNumber).$(Build.BuildId)
