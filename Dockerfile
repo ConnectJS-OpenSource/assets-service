@@ -11,7 +11,7 @@ RUN dotnet publish Asset-Service -c Release -o out
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /App
 COPY --from=build-env /App/out .
-
+RUN mkdir assets
 ENV PORT=80
 EXPOSE ${PORT}
 ENV ASPNETCORE_ENVIRONMENT=Production
