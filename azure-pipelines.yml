@@ -23,7 +23,7 @@ stages:
         containerRegistry: 'DOCKER_HUB'
         repository: 'pitchnhire/pnh-asset-service'
         command: 'build'
-        Dockerfile: 'Asset-Service/Dockerfile'
+        Dockerfile: 'Dockerfile'
         arguments: --no-cache
         tags: |
           latest
