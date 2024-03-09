@@ -17,7 +17,9 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="AspNetCore.HealthChecks.Aws.S3" Version="8.0.0" />
         <PackageReference Include="Microsoft.Extensions.Azure" Version="1.7.1"/>
+        <PackageReference Include="MimeTypesMap" Version="1.0.8" />
     </ItemGroup>
 
     <ItemGroup>

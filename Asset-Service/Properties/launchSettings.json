@@ -4,7 +4,7 @@
     "Asset-Service": {
       "commandName": "Project",
       "dotnetRunMessages": true,
-      "applicationUrl": "http://localhost:5117",
+      "applicationUrl": "http://[::]:5181",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

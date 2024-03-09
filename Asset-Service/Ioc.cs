@@ -14,13 +14,26 @@ public class Ioc
     public static void Register(IServiceCollection services, IConfiguration configuration)
     {
         services.AddHttpContextAccessor();
+
+
+        var aws = new
+        {
+            creds = new BasicAWSCredentials(
+                configuration.GetSection("AWS:ACCESS_KEY_ID").Get<string>(),
+                configuration.GetSection("AWS:SECRET_ACCESS_KEY").Get<string>()
+            ),
+            config = new AmazonS3Config
+            {
+                RegionEndpoint =
+                    RegionEndpoint.GetBySystemName(configuration.GetSection("AWS:DEFAULT_REGION").Get<string>()),
+                AllowAutoRedirect = true
+            }
+        };
+        
         services.AddDefaultAWSOptions(new AWSOptions
         {
-            Region = RegionEndpoint.GetBySystemName(configuration.GetSection("AWS").GetValue<string>("DEFAULT_REGION")),
-            Credentials = new BasicAWSCredentials(
-                configuration.GetSection("AWS").GetValue<string>("ACCESS_KEY_ID"),
-                configuration.GetSection("AWS").GetValue<string>("SECRET_ACCESS_KEY")
-            )
+            Region = aws.config.RegionEndpoint,
+            Credentials = aws.creds
         });
 
         services.AddSingleton<ClientSecretCredential>(f => new ClientSecretCredential(
@@ -28,14 +41,16 @@ public class Ioc
             configuration.GetSection("Azure").GetValue<string>("ClientId"),
             configuration.GetSection("Azure").GetValue<string>("ClientSecret")
         ));
-
-        services.AddScoped<IClientConfig>(f => new AmazonS3Config
-        {
-            RegionEndpoint = RegionEndpoint.GetBySystemName(configuration.GetSection("aws").GetValue<string>("region")),
-            AllowAutoRedirect = true
-        });
-
+        
         services.AddAWSService<IAmazonS3>();
+        
+        services
+            .AddHealthChecks()
+            .AddS3(options =>
+            {
+                options.Credentials = aws.creds;
+                options.S3Config = aws.config;
+            });
 
         services.AddKeyedScoped<IAssetService, S3Service>("aws");
         services.AddKeyedScoped<IAssetService, AzStorageService>("azure");
