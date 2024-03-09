@@ -13,14 +13,13 @@ var app = builder.Build();
 
 app.MapGet("/get", async (
     [FromKeyedServices("aws")] IAssetService assetsService,
-    [FromQuery] string root,
     [FromQuery] string path) =>
 {
     try
     {
         var file = Path.GetFileName(path);
         var mime = MimeTypesMap.GetMimeType(file);
-        var asset = await assetsService.GetAsset(root, path);
+        var asset = await assetsService.GetAsset(path);
         return Results.File(asset, contentType: mime, fileDownloadName: file, enableRangeProcessing: true);
     }
     catch (Exception ex)
@@ -31,7 +30,6 @@ app.MapGet("/get", async (
 
 app.MapPost("/upload", async (HttpContext ctx,
     [FromKeyedServices("aws")] IAssetService assetsService,
-    [FromQuery] string root,
     [FromQuery] string path,
     [FromQuery] bool autogen = true,
     IFormFile? file = null)=>
@@ -49,11 +47,11 @@ app.MapPost("/upload", async (HttpContext ctx,
 
         path = (path.IsNotNullOrEmpty() ? path + "/" : "");
         
-        var newPath = await assetsService.PutAssetDynamic(root, path, file.FileName, file.OpenReadStream());
+        var newPath = await assetsService.PutAssetDynamic(path, file.FileName, file.OpenReadStream());
         if (newPath != null) return Results.Ok(new
         {
             newPath,
-            url = $"/get?root={root}&path={Uri.EscapeDataString(newPath)}"
+            url = $"/get?path={Uri.EscapeDataString(newPath)}"
         });
         return Results.NoContent();
     }
@@ -68,18 +66,17 @@ app.MapPost("/upload", async (HttpContext ctx,
         return Results.BadRequest(new { error = "Remove slash from the end {path}" });
     
     
-    var ok = await assetsService.PutAsset(root, path, file.OpenReadStream());
+    var ok = await assetsService.PutAsset(path, file.OpenReadStream());
     return ok ? Results.Ok() : Results.NoContent();
 
 }).DisableAntiforgery();
 
 app.MapDelete("/delete", async (
     [FromKeyedServices("aws")] IAssetService assetsService,
-    [FromQuery] string root,
     [FromQuery] string path
     ) =>
 {
-    var res = await assetsService.DeleteAsset(root, path);
+    var res = await assetsService.DeleteAsset(path);
     return res ? Results.Ok() : Results.NoContent();
 });
 

@@ -26,8 +26,9 @@ public class Ioc
             {
                 RegionEndpoint =
                     RegionEndpoint.GetBySystemName(configuration.GetSection("AWS:DEFAULT_REGION").Get<string>()),
-                AllowAutoRedirect = true,
-            }
+                AllowAutoRedirect = true
+            },
+            bucket = configuration.GetSection("AWS:BUCKET").Get<string>()
         };
         
         services.AddDefaultAWSOptions(new AWSOptions
@@ -36,23 +37,28 @@ public class Ioc
             Credentials = aws.creds
         });
 
+        services.AddScoped<IClientConfig>(f => aws.config);
+
         services.AddSingleton<ClientSecretCredential>(f => new ClientSecretCredential(
-            configuration.GetSection("Azure").GetValue<string>("TenantId"),
-            configuration.GetSection("Azure").GetValue<string>("ClientId"),
-            configuration.GetSection("Azure").GetValue<string>("ClientSecret")
+            configuration.GetSection("Azure:TenantId").Get<string>(),
+            configuration.GetSection("Azure:ClientId").Get<string>(),
+            configuration.GetSection("Azure:ClientSecret").Get<string>()
         ));
         
         services.AddAWSService<IAmazonS3>();
-        
-        services
-            .AddHealthChecks()
-            .AddS3(options =>
-            {
-                options.Credentials = aws.creds;
-                options.S3Config = aws.config;
-            });
 
-        services.AddKeyedScoped<IAssetService, S3Service>("aws");
-        services.AddKeyedScoped<IAssetService, AzStorageService>("azure");
+        if(configuration.GetValue<string>("Provider") == "AWS")
+            services.AddHealthChecks().AddCheck<S3Service>("s3-check");
+        
+        if(configuration.GetValue<string>("Provider") == "Azure")
+            services.AddHealthChecks().AddCheck<AzStorageService>("azure-check");
+        
+        services.AddScoped<S3Service>(f => new S3Service(f.GetRequiredService<IAmazonS3>(),
+            configuration.GetSection("AWS:BUCKET").Get<string>() ?? ""));
+        services.AddScoped<AzStorageService>(f => new AzStorageService(f.GetRequiredService<ClientSecretCredential>(),
+            configuration.GetSection("Azure:Container").Get<string>() ?? ""));
+        
+        services.AddKeyedScoped<IAssetService, S3Service>("aws", (f,i) => f.GetRequiredService<S3Service>());
+        services.AddKeyedScoped<IAssetService, AzStorageService>("azure", (f,i) => f.GetRequiredService<AzStorageService>());
     }
 }

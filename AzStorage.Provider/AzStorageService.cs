@@ -1,46 +1,47 @@
 ﻿using Azure.Identity;
 using Contracts;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace AzStorage.Provider;
 
-public class AzStorageService(ClientSecretCredential credential) : IAssetService
+public class AzStorageService(ClientSecretCredential credential, string container) : IAssetService
 {
     public Task<bool> Ping()
     {
         throw new NotImplementedException();
     }
 
-    public Task<Stream> GetAsset(string root, string Path)
+    public Task<Stream> GetAsset(string path)
     {
         throw new NotImplementedException();
     }
 
-    public Task<bool> PutAsset(string root, string? path, Stream fileStream)
+    public Task<bool> PutAsset(string? path, Stream fileStream)
     {
         throw new NotImplementedException();
     }
 
-    public Task<string?> PutAssetDynamic(string root, string path, string filename, Stream fileStream)
+    public Task<string?> PutAssetDynamic(string path, string filename, Stream fileStream)
     {
         throw new NotImplementedException();
     }
 
-    public Task<bool> DeleteAsset(string root, string path)
+    public Task<bool> DeleteAsset(string path)
     {
         throw new NotImplementedException();
     }
 
-    public Task<bool> Exists(string root, string path)
+    public Task<bool> Exists(string path)
     {
         throw new NotImplementedException();
     }
 
-    public Task<bool> Move(string root, string from, string to)
+    public Task<bool> Move(string from, string to)
     {
         throw new NotImplementedException();
     }
 
-    public Task<bool> PutAsset(string root, string path)
+    public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = new CancellationToken())
     {
         throw new NotImplementedException();
     }
