@@ -6,6 +6,7 @@ using AWS.S3.Provider;
 using AzStorage.Provider;
 using Azure.Identity;
 using Contracts;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Asset_Service;
 
@@ -14,7 +15,17 @@ public class Ioc
     public static void Register(IServiceCollection services, IConfiguration configuration)
     {
         services.AddHttpContextAccessor();
+        services.AddMemoryCache();
+        services.AddAuthentication().AddBearerToken("LocalAuthIssuer");
+        services.AddAuthorizationBuilder().AddPolicy("auth", config =>
+        {
+            config.AddRequirements(new CustomTokenRequirement(configuration));
+        });
 
+        services.AddSingleton<IAuthorizationHandler, CustomTokenRequirementHandler>();
+        
+        services.AddEndpointsApiExplorer();
+        services.AddSwaggerGen();
 
         var aws = new
         {
