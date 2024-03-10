@@ -9,9 +9,34 @@ GET /get?path={path}
 path = "dir1/dir2/dir3/real_file.pdf"
 ```
 
-```
+``` js
 POST /upload?path={path}&autogen=true
 multipart-formdata , { file: blob }
+
+const axios = require('axios');
+const FormData = require('form-data');
+const fs = require('fs');
+let data = new FormData();
+data.append('file', fs.createReadStream('/C:/Users/Sunil Kumar/OneDrive/Pictures/pexels-cesar-perez-733745.jpg'));
+
+let config = {
+  method: 'post',
+  maxBodyLength: Infinity,
+  url: 'http://localhost:5181/upload?path=',
+  headers: { 
+    ...data.getHeaders()
+  },
+  data : data
+};
+
+axios.request(config)
+.then((response) => {
+  console.log(JSON.stringify(response.data));
+})
+.catch((error) => {
+  console.log(error);
+});
+
 ```
 ```
 if autogen == true
@@ -22,7 +47,7 @@ if autogen == false
   path = "dir1/dir2/dir3/real_file.pdf"
 
 ```
-```
+``` json
 
 RESPONSE
 
